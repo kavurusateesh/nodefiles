@@ -1,7 +1,3 @@
-const db = require("../models");
-const User = db.users_tbl;
-
-
 var jwt = require("jsonwebtoken");
 var encryption = require('../helpers/Encryption');
 const dbConfig = require("../config/db.config.js");
@@ -10,29 +6,64 @@ const passport = require('passport');
 require('../config/passport')(passport);
 
 exports.login = function (req, res) {
-	console.log('test chandra123');
-    passport.authenticate('local', function (err, admin, info) {
-		console.log('test chandra');
+	
+    passport.authenticate('local', function (err, user, info) {
+		
         if (err) {
 			console.log('err1', JSON.stringify(err));
            // return next(err);
         }
-        if (!admin) {
-            console.log(info.message);
+        if (!user) {
+            console.log("addmin details is empty..");
         }
-        req.logIn(admin, function (err) {
+       
+        req.logIn(user, function (err) {
             if (err) {
 				console.log('err2', JSON.stringify(err));
                // return next(err);
-			}
-			console.log('admin', JSON.stringify(admin));
-            res.send(admin);
+            }
+            console.log("final data--------", user);
+          	loginOutput = {
+				"notification": {
+					"message": "Success",
+					"code": "200",
+					"type": "Success",
+					"is_auth": true,
+					"hint": "Response Sent"
+				},
+				"data": {
+					
+					"email": user.email,
+					"userID": user.id,
+					"accessToken": "djkfadhfjajfjajdfhahfhhfhdhadhh---"
+				}
+			};
+			res.send(loginOutput);
 
         });
     })(req, res);
 }
 
-
+exports.sessionDetails = (req, res) => {
+   
+    console.log("use details -----------", req.user);
+	// if(session.user) {
+	// 	req.header("Authorization", session.user.token);
+	// 	var sessionData = {			
+	// 		"status" : "success", 
+	// 		"data" : {
+	// 			"user_id": session.user.user_id,  
+	// 			"email" : session.user.user_email,
+	// 			"token" : session.user.token
+	// 		},
+	// 		"dataHeader": { "headers": { "Authorization": session.user.token } }
+	// 	};
+	// 	res.json(sessionData);
+	// } else {
+	// 	var result = {"status" : "failure", "data" : {"message" : "Login Failure !!"}};
+	// 	res.json(result);
+	// }
+};    
 
 // // Create a Login
 // exports.login = (req, res) => {
